@@ -51,7 +51,7 @@
       }
 
       // allow marker placements
-      if (marker = null) {
+      if (marker == null) {
         var markerListener = GEvent.addListener(map, "click", function(overlay, latlng) {
           marker = new GMarker(latlng, {draggable: true});
           map.addOverlay(marker);
