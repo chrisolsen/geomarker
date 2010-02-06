@@ -50,6 +50,20 @@
         map.setCenter(loc, 12);  
       }
 
+      
+      var addMoveMarkerListeners = function(map, marker, latitudeFormElement, longitudeFormElement) {
+        GEvent.addListener(marker, "dragstart", function() {
+          map.closeInfoWindow();
+        });
+
+        GEvent.addListener(marker, "dragend", function() {
+          // set the coordinates in the form
+          var point = marker.getPoint();
+          latitudeFormElement.val( point.y );
+          longitudeFormElement.val( point.x );
+        });
+      };
+
       // allow marker placements
       if (marker == null) {
         var markerListener = GEvent.addListener(map, "click", function(overlay, latlng) {
@@ -62,20 +76,13 @@
 
           // remove the listener now that the marker exists
           GEvent.removeListener(markerListener);
+
+          addMoveMarkerListeners(map, marker, latitudeFormElement, longitudeFormElement);
         });
       }
       // allow existing marker to be moved
       else {
-        GEvent.addListener(marker, "dragstart", function() {
-          map.closeInfoWindow();
-        });
-
-        GEvent.addListener(marker, "dragend", function() {
-          // set the coordinates in the form
-          var point = marker.getPoint();
-          latitudeFormElement.val( point.y );
-          longitudeFormElement.val( point.x );
-        });
+        addMoveMarkerListeners(map, marker, latitudeFormElement, longitudeFormElement);
       }
 
       // add mapping control widgets
