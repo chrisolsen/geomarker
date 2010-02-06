@@ -31,8 +31,7 @@
       var map = new GMap2(item[0]);
       var marker;
       
-      // set the initial maps position and zoom
-      // when editting an existing location
+      // set the initial maps position and zoom when editting an existing location
       if (lat != "" && lng != "") {
         var location = new GLatLng(lat, lng);
         // the setCenter has to be done first to prevent error
@@ -44,29 +43,29 @@
       else if (options.startingLatitude == null || options.startingLongitude == null) {
         map.setCenter(new GLatLng(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng), 3);
       }
-      // geo values exist within the form 
-      // only starting points exist
+      // geo values exist within the form only starting points exist
       else {
         var loc= new GLatLng(options.startingLatitude, options.startingLongitude);
         // the setCenter has to be done first to prevent errors
         map.setCenter(loc, 12);  
       }
 
-      //// allow marker placements
-      var markerListener = GEvent.addListener(map, "click", function(overlay, latlng) {
-        marker = new GMarker(latlng, {draggable: true});
-        map.addOverlay(marker);
-         
-        // set the coordinates in the form
-        latitudeFormElement.val(latlng.y);
-        longitudeFormElement.val(latlng.x);
+      // allow marker placements
+      if (marker = null) {
+        var markerListener = GEvent.addListener(map, "click", function(overlay, latlng) {
+          marker = new GMarker(latlng, {draggable: true});
+          map.addOverlay(marker);
+           
+          // set the coordinates in the form
+          latitudeFormElement.val(latlng.y);
+          longitudeFormElement.val(latlng.x);
 
-        // remove the listener now that the marker exists
-        GEvent.removeListener(markerListener);
-      })
-
-      // bind the drag n' drop
-      if (marker != null) {
+          // remove the listener now that the marker exists
+          GEvent.removeListener(markerListener);
+        });
+      }
+      // allow existing marker to be moved
+      else {
         GEvent.addListener(marker, "dragstart", function() {
           map.closeInfoWindow();
         });
