@@ -45,12 +45,11 @@
       }
       // geo values exist within the form only starting points exist
       else {
-        var loc= new GLatLng(options.startingLatitude, options.startingLongitude);
+        var loc = new GLatLng(options.startingLatitude, options.startingLongitude);
         // the setCenter has to be done first to prevent errors
         map.setCenter(loc, 12);  
       }
 
-      
       var addMoveMarkerListeners = function(map, marker, latitudeFormElement, longitudeFormElement) {
         GEvent.addListener(marker, "dragstart", function() {
           map.closeInfoWindow();
@@ -86,27 +85,43 @@
       }
 
       // add mapping control widgets
-      map.setUIToDefault();
+      map.addControl(new GSmallMapControl());      
 
     });
   } // end of geoMarkerForForm
 
-  $.fn.geoMarker = function(lat, lng, caption) {
+  $.fn.geoMarker = function(lat, lng, options) {
+    options = $.extend(options, {});
     return this.geoMarkers( 
-      [{lat:lat, lng:lng, caption:caption}], 
-      new GLatLng(lat, lng)
+      [{lat:lat, lng:lng, caption:options["caption"]}], 
+      new GLatLng(lat, lng),
+      options
     );
   } // end of geoMarker
 
-  $.fn.geoMarkers = function(coordArr, center) {
+  $.fn.geoMarkers = function(coordArr, center, options) {
     // ensure google libs are loaded 
     if (!GBrowserIsCompatible())
       return [];
 
+    options = $.extend(options, {});
+
     // bind the later cleanup
     $("body").unload(GUnload);
 
-    var map = new GMap2($(this)[0]);
+    var map; 
+    if (options["height"] != null && options["width"] != null) {
+      height = parseInt(options["height"]);
+      width = parseInt(options["width"]);
+      map = new GMap2( $(this)[0], {size: new GSize(width,height)} );
+    }
+    else {
+      map = new GMap2( $(this)[0], {size: new GSize(500,400)} );
+    }
+
+    map.disableScrollWheelZoom();
+    map.disableContinuousZoom();
+    map.disablePinchToZoom();
 
     return this.each(function() {
 
@@ -142,7 +157,7 @@
       // mark the center point before the mapping the points
       // to prevent crash
       map.setCenter(center, 12);
-      map.setUIToDefault();
+      map.addControl(new GSmallMapControl());      
     });
   } // end of geoMarker
 
